@@ -61,6 +61,15 @@
     .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #085041; color: #E1F5EE; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 99; white-space: nowrap; }
     .toast.show { opacity: 1; }
   </style>
+  <link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#1D9E75">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="21Days">
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+  }
+</script>
 </head>
 <body>
 <div class="app">

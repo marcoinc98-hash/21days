@@ -1,0 +1,22 @@
+{
+  "name": "21Days — Logra tus metas",
+  "short_name": "21Days",
+  "description": "Logra cualquier meta en 21 días",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F7F5",
+  "theme_color": "#1D9E75",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
