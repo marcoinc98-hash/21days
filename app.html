@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>21Days — Tu meta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #F7F7F5; min-height: 100vh; padding: 1.5rem 1rem 3rem; }
+    .app { max-width: 420px; margin: 0 auto; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .logo span { color: #1D9E75; }
+    .user-name { font-size: 13px; color: #888; }
+    .logout { font-size: 12px; color: #aaa; cursor: pointer; background: none; border: none; }
+    .card { background: #fff; border-radius: 16px; padding: 1.25rem; margin-bottom: 1rem; box-shadow: 0 1px 8px rgba(0,0,0,0.05); }
+    .goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+    .goal-title { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; color: #111; max-width: 220px; line-height: 1.3; }
+    .day-counter .num { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: #1D9E75; line-height: 1; text-align: right; }
+    .day-counter .label { font-size: 11px; color: #888; text-align: right; }
+    .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 1rem; }
+    .day-dot { aspect-ratio: 1; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; }
+    .day-dot.done { background: #1D9E75; color: #fff; }
+    .day-dot.today { background: #E1F5EE; border: 2px solid #1D9E75; color: #085041; font-weight: 700; }
+    .day-dot.empty { background: #F7F7F5; color: #ccc; border: 1px solid #E8E8E5; }
+    .btn { width: 100%; padding: 13px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { background: #E8E8E5; color: #aaa; cursor: default; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: #aaa; text-transform: uppercase; letter-spacing: 0.8px; margin: 1.5rem 0 0.75rem; }
+    .coach-msg { font-size: 14px; color: #333; line-height: 1.6; margin-bottom: 0.75rem; }
+    .coach-msg.loading { color: #aaa; font-style: italic; }
+    .refresh-btn { font-size: 12px; color: #1D9E75; background: none; border: 1px solid #5DCAA5; border-radius: 20px; padding: 5px 12px; cursor: pointer; }
+    .badges-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 12px; border-radius: 10px; border: 1px solid #E8E8E5; min-width: 68px; }
+    .badge.earned { background: #E1F5EE; border-color: #5DCAA5; }
+    .badge.locked { opacity: 0.4; }
+    .badge-icon { font-size: 22px; }
+    .badge-name { font-size: 10px; color: #888; text-align: center; line-height: 1.2; }
+    .badge.earned .badge-name { color: #085041; font-weight: 500; }
+    .new-goal { border: 2px dashed #E8E8E5; border-radius: 16px; padding: 1.25rem; text-align: center; cursor: pointer; transition: background 0.15s; }
+    .new-goal:hover { background: #F0FBF7; border-color: #5DCAA5; }
+    .new-goal p { font-size: 13px; color: #aaa; margin-top: 4px; }
+    .pro-banner { background: #085041; border-radius: 16px; padding: 1rem 1.25rem; display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+    .pro-banner .text { color: #9FE1CB; font-size: 13px; }
+    .pro-banner .title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: #E1F5EE; margin-bottom: 2px; }
+    .pro-btn { background: #1D9E75; color: #fff; border: none; border-radius: 20px; padding: 8px 16px; font-size: 12px; font-weight: 700; font-family: 'Syne', sans-serif; cursor: pointer; }
+    .empty-state { text-align: center; padding: 2.5rem 1rem; }
+    .empty-state h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #111; margin-bottom: 8px; }
+    .empty-state p { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 50; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-bg.open { display: flex; }
+    .modal { background: #fff; border-radius: 20px; padding: 1.75rem; width: 100%; max-width: 380px; }
+    .modal h3 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; margin-bottom: 0.5rem; }
+    .modal p { font-size: 13px; color: #888; margin-bottom: 1.25rem; }
+    .modal textarea { width: 100%; padding: 12px 14px; border: 1.5px solid #E8E8E5; border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; resize: none; outline: none; height: 80px; }
+    .modal textarea:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px #E1F5EE; }
+    .modal-btns { display: flex; gap: 8px; margin-top: 1rem; }
+    .modal-cancel { flex: 1; padding: 12px; background: #F7F7F5; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: #888; cursor: pointer; }
+    .modal-save { flex: 2; padding: 12px; background: #1D9E75; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #085041; color: #E1F5EE; padding: 10px 20px; border-radius: 20px; font-size: 13px; opacity: 0; transition: opacity 0.3s; pointer-events: none; z-index: 99; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="logo">🔥 21<span>Days</span></div>
+    <div style="text-align:right">
+      <div class="user-name" id="user-name">Cargando...</div>
+      <button class="logout" onclick="doLogout()">Cerrar sesión</button>
+    </div>
+  </div>
+  <div id="main-content">
+    <div class="card" style="text-align:center;color:#aaa;font-size:14px;padding:2rem">Cargando tu meta...</div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <h3>¿Cuál es tu meta?</h3>
+    <p>Escríbela de forma concreta. Ej: "Leer 20 minutos cada día"</p>
+    <textarea id="goal-input" placeholder="Mi meta para los próximos 21 días es..."></textarea>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="modal-save" onclick="saveGoal()">Empezar ciclo 🔥</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+  const SUPABASE_URL = 'https://awqzztqijlmxygnsxknz.supabase.co'
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3cXp6dHFpamxteHlnbnN4a256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTEwNzIsImV4cCI6MjA5NTY2NzA3Mn0.2nxTAly2rM_2TEhNvEgnK9cy0-Wq1SD7PVs93H1grD0'
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+  let currentUser = null
+  let currentGoal = null
+  let authToken = null
+
+  // AUTH GUARD
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = 'index.html'; throw new Error('no session') }
+  currentUser = session.user
+  authToken = session.access_token
+  document.getElementById('user-name').textContent = currentUser.user_metadata?.name || currentUser.email
+
+  // HEADERS con token
+  function hdrs() {
+    return {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + authToken,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    }
+  }
+
+  // CARGAR META
+  async function loadGoal() {
+    const url = SUPABASE_URL + '/rest/v1/goals?select=*&user_id=eq.' + currentUser.id + '&is_complete=eq.false&order=created_at.desc&limit=1'
+    const res = await fetch(url, { headers: hdrs() })
+    const data = await res.json()
+    if (!Array.isArray(data) || data.length === 0) renderEmpty()
+    else { currentGoal = data[0]; renderGoal(data[0]) }
+  }
+
+  function renderEmpty() {
+    document.getElementById('main-content').innerHTML = `
+      <div class="empty-state">
+        <div style="font-size:48px;margin-bottom:1rem">🎯</div>
+        <h2>¿Cuál es tu meta?</h2>
+        <p>Define una sola cosa en la que quieras enfocarte<br>durante los próximos 21 días.</p>
+        <button class="btn" style="max-width:240px;margin:0 auto" onclick="openModal()">Definir mi primera meta</button>
+      </div>
+      <div class="pro-banner">
+        <div class="text"><div class="title">Pro — $4.99 / mes</div>Metas ilimitadas · Coach IA diario</div>
+        <button class="pro-btn">Ver Pro ↗</button>
+      </div>`
+  }
+
+  function renderGoal(goal) {
+    const days = goal.completed_days || []
+    const today = days.length + 1
+    const todayDone = days.includes(today)
+    let grid = ''
+    for (let i = 1; i <= 21; i++) {
+      if (days.includes(i)) grid += '<div class="day-dot done">✓</div>'
+      else if (i === today) grid += '<div class="day-dot today">' + i + '</div>'
+      else grid += '<div class="day-dot empty">' + i + '</div>'
+    }
+    const badges = [
+      { icon: '🌱', name: 'Primer paso', earned: days.length >= 1 },
+      { icon: '🔥', name: 'En racha', earned: days.length >= 7 },
+      { icon: '💎', name: 'Enfocado', earned: days.length >= 14 },
+      { icon: '👑', name: 'Maestro 21', earned: days.length >= 21 },
+    ]
+    document.getElementById('main-content').innerHTML = `
+      <div class="card">
+        <div class="goal-header">
+          <div class="goal-title">${goal.title}</div>
+          <div class="day-counter"><div class="num">${days.length}</div><div class="label">de 21 días</div></div>
+        </div>
+        <div class="days-grid">${grid}</div>
+        <button class="btn" id="checkin-btn" ${todayDone ? 'disabled' : ''} onclick="doCheckin()">
+          ${todayDone ? '✅ Día completado' : '✓ Marcar hoy como completado'}
+        </button>
+      </div>
+      <div class="section-title">Coach IA</div>
+      <div class="card">
+        <div class="coach-msg loading" id="coach-msg">Consultando a tu coach...</div>
+        <button class="refresh-btn" onclick="loadCoach()">↻ Nuevo consejo</button>
+      </div>
+      <div class="section-title">Tus logros</div>
+      <div class="badges-row">${badges.map(b => '<div class="badge ' + (b.earned ? 'earned' : 'locked') + '"><span class="badge-icon">' + b.icon + '</span><span class="badge-name">' + b.name + '</span></div>').join('')}</div>
+      <div class="section-title">Metas</div>
+      <div class="new-goal" onclick="openModal()"><div style="font-size:24px;color:#1D9E75">+</div><p>Nueva meta (Plan Pro)</p></div>
+      <div class="pro-banner">
+        <div class="text"><div class="title">Pro — $4.99 / mes</div>Metas ilimitadas · Coach IA diario</div>
+        <button class="pro-btn">Ver Pro ↗</button>
+      </div>`
+    loadCoach(goal.title, days.length)
+  }
+
+  // CHECK-IN
+  window.doCheckin = async () => {
+    if (!currentGoal) return
+    const days = currentGoal.completed_days || []
+    const next = days.length + 1
+    const updated = [...days, next]
+    const done = updated.length >= 21
+    const res = await fetch(SUPABASE_URL + '/rest/v1/goals?id=eq.' + currentGoal.id, {
+      method: 'PATCH', headers: hdrs(),
+      body: JSON.stringify({ completed_days: updated, is_complete: done })
+    })
+    if (res.ok) { toast(done ? '🏆 ¡21 días completados!' : '🎉 ¡Día ' + next + ' completado!'); loadGoal() }
+  }
+
+  // COACH IA
+  async function loadCoach(title, days) {
+    title = title || currentGoal?.title || 'tu meta'
+    days = days !== undefined ? days : (currentGoal?.completed_days?.length || 0)
+    const el = document.getElementById('coach-msg')
+    if (!el) return
+    el.className = 'coach-msg loading'
+    el.textContent = 'Consultando a tu coach...'
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+          system: 'Eres un coach motivacional en una app llamada 21Days. Responde SOLO con 2-3 oraciones motivacionales en español, sin saludos ni títulos.',
+          messages: [{ role: 'user', content: 'Meta: "' + title + '". Día ' + days + ' de 21.' }]
+        })
+      })
+      const data = await res.json()
+      el.className = 'coach-msg'
+      el.textContent = data.content?.find(b => b.type === 'text')?.text || 'Sigue adelante, cada día cuenta.'
+    } catch { el.className = 'coach-msg'; el.textContent = 'Llevas ' + days + ' días — el hábito ya se está formando.' }
+  }
+  window.loadCoach = loadCoach
+
+  // NUEVA META
+  window.openModal = () => document.getElementById('modal').classList.add('open')
+  window.closeModal = () => document.getElementById('modal').classList.remove('open')
+  window.saveGoal = async () => {
+    const title = document.getElementById('goal-input').value.trim()
+    if (!title) return
+    const res = await fetch(SUPABASE_URL + '/rest/v1/goals', {
+      method: 'POST', headers: hdrs(),
+      body: JSON.stringify({ user_id: currentUser.id, title, completed_days: [], is_complete: false })
+    })
+    if (res.ok) { closeModal(); toast('🎯 ¡Meta creada!'); loadGoal() }
+    else { const e = await res.json(); console.error(e) }
+  }
+
+  // LOGOUT
+  window.doLogout = async () => { await supabase.auth.signOut(); window.location.href = 'index.html' }
+
+  // TOAST
+  function toast(msg) {
+    const t = document.getElementById('toast')
+    t.textContent = msg; t.classList.add('show')
+    setTimeout(() => t.classList.remove('show'), 3000)
+  }
+
+  loadGoal()
+</script>
+</body>
+</html>

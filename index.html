@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>21Days — Inicia sesión</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: #F7F7F5; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .card { background: #fff; border-radius: 20px; padding: 2rem 1.75rem; width: 100%; max-width: 400px; box-shadow: 0 2px 20px rgba(0,0,0,0.07); }
+    .logo { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 8px; margin-bottom: 2rem; }
+    .logo span { color: #1D9E75; }
+    .tabs { display: flex; background: #F7F7F5; border-radius: 10px; padding: 4px; margin-bottom: 1.75rem; }
+    .tab { flex: 1; padding: 9px; text-align: center; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; border-radius: 7px; cursor: pointer; border: none; background: none; color: #888; transition: all 0.18s; }
+    .tab.active { background: #fff; color: #111; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+    .headline { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: #111; margin-bottom: 5px; }
+    .subline { font-size: 14px; color: #888; margin-bottom: 1.5rem; }
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-size: 12px; font-weight: 500; color: #888; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .field input { width: 100%; padding: 12px 14px; border: 1.5px solid #E8E8E5; border-radius: 10px; font-size: 15px; font-family: 'DM Sans', sans-serif; background: #fff; color: #111; outline: none; transition: border-color 0.15s; }
+    .field input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px #E1F5EE; }
+    .btn { width: 100%; padding: 14px; background: #1D9E75; color: #fff; border: none; border-radius: 10px; font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 0.5rem; transition: opacity 0.15s; }
+    .btn:hover { opacity: 0.9; }
+    .btn:disabled { opacity: 0.5; cursor: default; }
+    .google-btn { width: 100%; padding: 12px; background: #fff; border: 1.5px solid #E8E8E5; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; color: #111; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 0.75rem; transition: background 0.15s; }
+    .google-btn:hover { background: #F7F7F5; }
+    .divider { display: flex; align-items: center; gap: 10px; margin: 1.25rem 0 0.5rem; }
+    .divider span { font-size: 12px; color: #aaa; white-space: nowrap; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #E8E8E5; }
+    .error { background: #FEF0EE; border: 1px solid #F5C6C0; border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #C0392B; margin-bottom: 1rem; display: none; }
+    .forgot { text-align: right; margin-top: -6px; margin-bottom: 1rem; }
+    .forgot a { font-size: 12px; color: #1D9E75; cursor: pointer; }
+    .strength { height: 3px; border-radius: 2px; background: #E8E8E5; margin-top: 6px; overflow: hidden; display: none; }
+    .strength-fill { height: 100%; border-radius: 2px; transition: width 0.2s, background 0.2s; width: 0; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">🔥 21<span>Days</span></div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-reg" onclick="switchTab('reg')">Crear cuenta</button>
+    <button class="tab" id="tab-log" onclick="switchTab('log')">Iniciar sesión</button>
+  </div>
+
+  <div id="error" class="error"></div>
+
+  <div id="form-reg">
+    <p class="headline">Empieza tu primer ciclo</p>
+    <p class="subline">21 días. Una meta. Sin excusas.</p>
+    <div class="field">
+      <label>Tu nombre</label>
+      <input type="text" id="reg-name" placeholder="¿Cómo te llamamos?">
+    </div>
+    <div class="field">
+      <label>Correo</label>
+      <input type="email" id="reg-email" placeholder="tu@correo.com">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="reg-pass" placeholder="Mínimo 8 caracteres" oninput="checkStrength(this.value)">
+      <div class="strength" id="strength"><div class="strength-fill" id="strength-fill"></div></div>
+    </div>
+    <button class="btn" id="reg-btn" onclick="doRegister()">Crear mi cuenta gratis</button>
+    <div class="divider"><span>o</span></div>
+    <button class="google-btn" onclick="doGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continuar con Google
+    </button>
+  </div>
+
+  <div id="form-log" style="display:none">
+    <p class="headline">Bienvenido de vuelta</p>
+    <p class="subline">Tu racha te está esperando.</p>
+    <div class="field">
+      <label>Correo</label>
+      <input type="email" id="log-email" placeholder="tu@correo.com">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="log-pass" placeholder="Tu contraseña">
+    </div>
+    <div class="forgot"><a onclick="doReset()">¿Olvidaste tu contraseña?</a></div>
+    <button class="btn" id="log-btn" onclick="doLogin()">Iniciar sesión</button>
+    <div class="divider"><span>o</span></div>
+    <button class="google-btn" onclick="doGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+      Continuar con Google
+    </button>
+  </div>
+</div>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+  const SUPABASE_URL = 'https://awqzztqijlmxygnsxknz.supabase.co'
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF3cXp6dHFpamxteHlnbnN4a256Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAwOTEwNzIsImV4cCI6MjA5NTY2NzA3Mn0.2nxTAly2rM_2TEhNvEgnK9cy0-Wq1SD7PVs93H1grD0'
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+
+  function goToApp() {
+    localStorage.setItem('sb_key', SUPABASE_KEY)
+    window.location.href = 'app.html'
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('error')
+    el.textContent = msg
+    el.style.display = 'block'
+  }
+  function hideError() {
+    document.getElementById('error').style.display = 'none'
+  }
+
+  window.switchTab = (tab) => {
+    document.getElementById('tab-reg').classList.toggle('active', tab === 'reg')
+    document.getElementById('tab-log').classList.toggle('active', tab === 'log')
+    document.getElementById('form-reg').style.display = tab === 'reg' ? 'block' : 'none'
+    document.getElementById('form-log').style.display = tab === 'log' ? 'block' : 'none'
+    hideError()
+  }
+
+  window.checkStrength = (val) => {
+    const bar = document.getElementById('strength')
+    const fill = document.getElementById('strength-fill')
+    bar.style.display = val.length > 0 ? 'block' : 'none'
+    let score = [val.length >= 8, /[A-Z]/.test(val), /[0-9]/.test(val), /[^A-Za-z0-9]/.test(val)].filter(Boolean).length
+    fill.style.width = ['15%','40%','70%','100%'][score-1] || '0%'
+    fill.style.background = ['#E24B4A','#EF9F27','#1D9E75','#085041'][score-1] || '#E8E8E5'
+  }
+
+  window.doRegister = async () => {
+    hideError()
+    const name = document.getElementById('reg-name').value.trim()
+    const email = document.getElementById('reg-email').value.trim()
+    const pass = document.getElementById('reg-pass').value
+    if (!name) return showError('Escribe tu nombre')
+    if (!email.includes('@')) return showError('Correo inválido')
+    if (pass.length < 8) return showError('Mínimo 8 caracteres')
+    const btn = document.getElementById('reg-btn')
+    btn.disabled = true; btn.textContent = 'Creando cuenta...'
+    const { error } = await supabase.auth.signUp({ email, password: pass, options: { data: { name } } })
+    if (error) { showError(error.message); btn.disabled = false; btn.textContent = 'Crear mi cuenta gratis' }
+    else goToApp()
+  }
+
+  window.doLogin = async () => {
+    hideError()
+    const email = document.getElementById('log-email').value.trim()
+    const pass = document.getElementById('log-pass').value
+    if (!email.includes('@')) return showError('Correo inválido')
+    if (!pass) return showError('Escribe tu contraseña')
+    const btn = document.getElementById('log-btn')
+    btn.disabled = true; btn.textContent = 'Entrando...'
+    const { error } = await supabase.auth.signInWithPassword({ email, password: pass })
+    if (error) { showError('Correo o contraseña incorrectos'); btn.disabled = false; btn.textContent = 'Iniciar sesión' }
+    else goToApp()
+  }
+
+  window.doGoogle = async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin + '/app.html' } })
+  }
+
+  window.doReset = async () => {
+    const email = document.getElementById('log-email').value.trim()
+    if (!email) return showError('Escribe tu correo primero')
+    await supabase.auth.resetPasswordForEmail(email)
+    showError('✅ Revisa tu correo')
+  }
+
+  // Si ya hay sesión, ir directo a la app
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) goToApp()
+</script>
+</body>
+</html>
